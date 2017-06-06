@@ -1,16 +1,18 @@
 package tistory.zxcv5500.reminders;
 
-import android.support.v7.app.AppCompatActivity;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class RemindersActivity extends AppCompatActivity {
 
 	private ListView mListView;
+	private RemindersDbAdapter mDbAdapter;
+	private RemindersSimpleCursorAdapter mCursorAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,19 +20,38 @@ public class RemindersActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_reminders);
 
 		mListView = (ListView) findViewById(R.id.reminders_list_view);
-		// arrayAdapter는 MVC(모델-뷰-컨트롤러)의 컨트롤러 역할을 한다.
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-				// 컨텍스트(Context)
-				this,
-				// 레이아웃 뷰(View)
+		mListView.setDivider(null);
+		mDbAdapter = new RemindersDbAdapter(this);
+		mDbAdapter.open();
+
+		Cursor cursor = mDbAdapter.fetchAllReminders();
+
+		String[] from = new String[] {
+				RemindersDbAdapter.COL_CONTENT
+		};
+
+		int[] to = new int[] {
+				R.id.row_text
+		};
+
+		mCursorAdapter = new RemindersSimpleCursorAdapter(
+				// 컨택스트
+				RemindersActivity.this,
+				// 행의 레이아웃
 				R.layout.reminders_row,
-				// 행의 텍스트 뷰(TextView)
-				R.id.row_text,
-				// ListView에 제공하는 데이터를 갖는 데이터 모델
-				new String[] {"first record", "second record", "third record"}
+				// 커서
+				cursor,
+				// 데이터베이스에 정의된 칼럼
+				from,
+				// 레이아웃의 뷰 id
+				to,
+				// 플래그이며 사용하지 않음
+				0
 		);
 
-		mListView.setAdapter(arrayAdapter);
+		// 이제는 cursorAdapter(MVC의 컨트롤러)가
+		// db(MVC의 모델)의 데이터로 ListView(MVC의 뷰)를 갱신한다.
+		mListView.setAdapter(mCursorAdapter);
 
 	}
 
