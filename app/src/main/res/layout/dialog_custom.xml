@@ -8,6 +8,7 @@
 	>
 	
 	<TextView
+		android:id="@+id/custom_title"
 		android:layout_width="match_parent"
 		android:layout_height="60dp"
 	    android:gravity="center_vertical"
@@ -55,6 +56,7 @@
 			/>
 
 		<Button
+			android:id="@+id/custom_button_commit"
 			android:layout_width="0dp"
 			android:layout_height="60dp"
 			android:layout_weight="50"
