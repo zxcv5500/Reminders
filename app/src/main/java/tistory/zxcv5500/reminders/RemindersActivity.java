@@ -1,13 +1,16 @@
 package tistory.zxcv5500.reminders;
 
+import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -66,8 +69,32 @@ public class RemindersActivity extends AppCompatActivity {
 		// ListView의 항목을 터치하면 이 리스너의 onItemClick()메서드가 호출된다
 		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Toast.makeText(RemindersActivity.this, "clicked" + position, Toast.LENGTH_SHORT).show();
+			public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(RemindersActivity.this);
+				ListView modeListView = new ListView(RemindersActivity.this);
+				String[] modes = new String[] { "Edit Reminder", "Delete Reminder" };
+				ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(
+						RemindersActivity.this,
+						android.R.layout.simple_list_item_1,
+						android.R.id.text1,
+						modes);
+				modeListView.setAdapter(modeAdapter);
+				builder.setView(modeListView);
+				final Dialog dialog = builder.create();
+				dialog.show();
+				modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+						// 메모 데이터 변경
+						if (position == 0) {
+							Toast.makeText(RemindersActivity.this, "edit " + masterListPosition, Toast.LENGTH_SHORT).show();
+						// 메모 데이터 삭제
+						} else {
+							Toast.makeText(RemindersActivity.this, "delete " + masterListPosition, Toast.LENGTH_SHORT).show();
+						}
+						dialog.dismiss();
+					}
+				});
 			}
 		});
 
