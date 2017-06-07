@@ -13,10 +13,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class RemindersActivity extends AppCompatActivity {
@@ -195,4 +201,66 @@ public class RemindersActivity extends AppCompatActivity {
 		}
 
 	}
+
+	private void fireCustomDialog(final Reminder reminder) {
+		// 커스텀 대화상자
+		final Dialog dialog = new Dialog(this);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.setContentView(R.layout.dialog_custom);
+
+		TextView titleView = (TextView) dialog.findViewById(R.id.custom_title);
+		final EditText editCustom = (EditText) dialog.findViewById(R.id.custom_edit_reminder);
+		Button commitButton = (Button) dialog.findViewById(R.id.custom_button_commit);
+		final CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.custom_check_box);
+		LinearLayout rootLayout = (LinearLayout) dialog.findViewById(R.id.custom_root_layout);
+		final boolean isEditOperation = (reminder != null);
+
+		if (isEditOperation) {
+			titleView.setText("Edit Reminder");
+			checkBox.setChecked(reminder.getImportant() == 1);
+			editCustom.setText(reminder.getContent());
+			rootLayout.setBackgroundColor(getResources().getColor(R.color.blue));
+		}
+
+		commitButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String reminderText = editCustom.getText().toString();
+				if (isEditOperation) {
+					Reminder reminderEdited = new Reminder(reminder.getId(), reminderText, checkBox.isChecked() ? 1 : 0);
+					mDbAdapter.updateReminder(reminderEdited);
+				// 새로운 메모 생성
+				} else {
+					mDbAdapter.createReminder(reminderText, checkBox.isChecked());
+				}
+				mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
+				dialog.dismiss();
+			}
+		});
+
+		Button buttonCancel = (Button) dialog.findViewById(R.id.custom_button_cancel);
+		buttonCancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		dialog.show();
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
