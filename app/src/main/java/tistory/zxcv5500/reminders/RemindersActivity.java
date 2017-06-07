@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +22,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class RemindersActivity extends AppCompatActivity {
 
@@ -99,10 +97,13 @@ public class RemindersActivity extends AppCompatActivity {
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 						// 메모 데이터 변경
 						if (position == 0) {
-							Toast.makeText(RemindersActivity.this, "edit " + masterListPosition, Toast.LENGTH_SHORT).show();
+							int nId = getIdFromPosition(masterListPosition);
+							Reminder reminder = mDbAdapter.fetchReminderById(nId);
+							fireCustomDialog(reminder);
 						// 메모 데이터 삭제
 						} else {
-							Toast.makeText(RemindersActivity.this, "delete " + masterListPosition, Toast.LENGTH_SHORT).show();
+							mDbAdapter.deleteReminderById(getIdFromPosition(masterListPosition));
+							mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
 						}
 						dialog.dismiss();
 					}
@@ -189,7 +190,7 @@ public class RemindersActivity extends AppCompatActivity {
 		switch (item.getItemId()) {
 			case R.id.action_new:
 			    // 새로운 메모 생성
-				Log.d(getLocalClassName(), "create new Reminder");
+				fireCustomDialog(null);
 				return true;
 
 			case R.id.action_exit:
