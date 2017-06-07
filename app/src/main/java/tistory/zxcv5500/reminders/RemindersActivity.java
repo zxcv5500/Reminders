@@ -6,7 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class RemindersActivity extends AppCompatActivity {
 
@@ -59,6 +62,14 @@ public class RemindersActivity extends AppCompatActivity {
 		// 이제는 cursorAdapter(MVC의 컨트롤러)가
 		// db(MVC의 모델)의 데이터로 ListView(MVC의 뷰)를 갱신한다.
 		mListView.setAdapter(mCursorAdapter);
+
+		// ListView의 항목을 터치하면 이 리스너의 onItemClick()메서드가 호출된다
+		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Toast.makeText(RemindersActivity.this, "clicked" + position, Toast.LENGTH_SHORT).show();
+			}
+		});
 
 	}
 
